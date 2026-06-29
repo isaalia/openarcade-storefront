@@ -3,11 +3,12 @@
 ## Status
 **INVESTIGATION COMPLETE — MANUAL ACTION REQUIRED**
 - Site IS live: ✅ `openarcade-storefront.vercel.app` (HTTP 200, full Next.js 16 app)
-- Latest prod deployment ID: `dpl_DmeR2chgFxXi83GNvmoxMGfLks9t`
+- Latest prod deployment ID: `dpl_CC53doEcPckaR1WoBBgk6S1NXnuT` (updated — was stale `dpl_DmeR2chgFxXi83GNvmoxMGfLks9t`)
 - GitHub Actions CI/CD: ❌ BROKEN — 0/4 secrets configured
-- Vercel auth: ❌ No VERCEL_TOKEN available (10+ prior agents confirmed same blocker)
+- Vercel auth: ❌ No VERCEL_TOKEN available (11+ prior agents confirmed same blocker)
 - Coolify dual deploy: ❌ Unreachable (deferred)
-- **11th+ agent to confirm same blocker: No VERCEL_TOKEN**
+- **12th+ agent to confirm same blocker: No VERCEL_TOKEN**
+- Fresh device auth code generated: **PFCC-GHPW** (expires 600s)
 
 ---
 
@@ -38,7 +39,7 @@
 | Vercel CLI auth | ❌ NOT AUTHED | No cached credentials, no .vercel/ directory |
 | Vercel API | ❌ `missingToken` | All endpoints reject without auth |
 | Coolify (5.9.153.215:3000) | ❌ UNREACHABLE | Connection timed out |
-| Deployment ID (live) | ✅ KNOWN | `dpl_DmeR2chgFxXi83GNvmoxMGfLks9t` |
+| Deployment ID (live) | ✅ KNOWN | `dpl_CC53doEcPckaR1WoBBgk6S1NXnuT` (was `dpl_DmeR2chgFxXi83GNvmoxMGfLks9t` — redeployed) |
 
 ### Configuration Files (All Correct)
 - `vercel.json` — ✅ Framework: nextjs, build: `npm run build`, region: iad1
@@ -48,13 +49,16 @@
 - `deploy-coolify.yml` — ✅ Webhook trigger, needs COOLIFY_DEPLOY_URL
 - `deploy.sh` — ✅ Master deploy script with all modes
 
-### What's Fixed (by this agent + JOB-eba4b2f5)
+### What's Fixed (by this agent + JOB-eba4b2f5 + JOB-522a598a + JOB-507d7e75)
 1. ✅ `scripts/setup-secrets.js` — Fixed runtime bug: `key.key` → `keyData.key` (was ReferenceError)
 2. ✅ `scripts/setup-secrets.js` — Removed unused imports (`execSync`, `GITHUB_API`)
 3. ✅ `eslint.config.mjs` — Added `scripts/**` to ignores (CLI tools, not app code)
 4. ✅ **BRIEF.md rewritten for openarcade-storefront** (was stale blckit-web content)
+5. ✅ **BRIEF.md deployment ID updated** — stale `dpl_DmeR2chgFxXi83GNvmoxMGfLks9t` → live `dpl_CC53doEcPckaR1WoBBgk6S1NXnuT`
+6. ✅ **Fresh device auth code generated** — PFCC-GHPW
+7. ✅ **All 7 routes verified live** (HTTP 200)
 
-### Root Cause (Same as 10+ Prior Agents)
+### Root Cause (Same as 11+ Prior Agents)
 **No VERCEL_TOKEN exists in any accessible location.**
 - Not in env vars
 - Not in GitHub secrets
@@ -67,10 +71,10 @@ The Vercel deployment exists because someone deployed via the Vercel dashboard m
 ---
 
 ## BLOCKER #1 (CRITICAL) — NEED VERCEL_TOKEN 🔴
-**This is the 11th+ agent to hit this blocker. The fix requires human action.**
+**This is the 12th+ agent to hit this blocker. The fix requires human action.**
 
 ### Option A: Device Auth (Quickest — ~30s)
-1. Visit **https://vercel.com/oauth/device?user_code=TRTN-RSHG** (fresh code from JOB-eba4b2f5)
+1. Visit **https://vercel.com/oauth/device?user_code=PFCC-GHPW** (fresh code from JOB-507d7e75)
 2. Authorize with Vercel account
 3. The CLI will cache credentials to `~/.vercel/auth.json`
 
@@ -122,7 +126,7 @@ git push origin main
 - [x] Fresh device auth code generated
 
 ### Phase 3 — Fix Dual Deploy (requires human)
-1. 👤 Visit https://vercel.com/oauth/device?user_code=TRTN-RSHG — authorize with Vercel account
+1. 👤 Visit https://vercel.com/oauth/device?user_code=PFCC-GHPW — authorize with Vercel account
 2. 🤖 Extract token: `export VERCEL_TOKEN=$(cat ~/.vercel/auth.json | node -e "...")`
 3. 🤖 Query Vercel API for ORG_ID and PROJECT_ID
 4. 👤 OR create token at: https://vercel.com/account/tokens
@@ -150,7 +154,7 @@ git push origin main
 **HANDOFF:** openarcade-storefront dual-deploy investigation complete. Same conclusion as 10+ prior agents across 7+ jobs. All automation scripts are prepared and ready. The only missing piece is GodAKUA visiting the device auth URL to authorize the Vercel CLI, then running the one-command setup.
 
 **What's needed from GodAKUA:**
-1. Visit https://vercel.com/oauth/device?user_code=TRTN-RSHG to authorize Vercel CLI
+1. Visit https://vercel.com/oauth/device?user_code=PFCC-GHPW to authorize Vercel CLI
 2. OR create a token at https://vercel.com/account/tokens
 3. Export VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID
 4. Run: `node scripts/setup-secrets.js`
