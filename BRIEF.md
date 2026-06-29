@@ -1,16 +1,34 @@
 # BRIEF.md — OpenArcade Aeria Editor Dual Deploy Fix (Job JOB-d7f00c0d)
 
 ## Status
-**BLOCKED — NEEDS VERCEL_TOKEN** (12+ prior jobs, same blocker, all codes expired unused)
+**INCOMPLETE_GOAL** — Full investigation complete. Fix blocked by VERCEL_TOKEN (same as 12+ prior jobs).
 
 **⚠️ VERCEL_TOKEN ROTATED 2026-06-27** — fleet-wide rotation invalidated all prior tokens.
 **⚠️ VERCEL SSO ACTIVE on coda-projects team** — blocks new deployments even with token.
 **⚠️ ZERO GITHUB SECRETS** on both repos (storefront + monorepo).
 
-**🔗 VISIT: https://vercel.com/oauth/device?user_code=VQDB-CBFW** (generated ~16:34 UTC, expires ~16:44 UTC)
-**🔄 ALSO: https://vercel.com/oauth/device?user_code=HQBT-CBWN** (from `vercel whoami` CLI, same window)
+### What I DID complete
+- ✅ Cloned both repos (storefront standalone + openarcade monorepo with aeria-editor)
+- ✅ Verified aeria-editor build: `tsc && vite build` → 5 modules, 81ms, PASS
+- ✅ Verified live site: `openarcade-aeria-editor.vercel.app` → HTTP 200
+- ✅ Generated fresh Vercel device auth codes
+- ✅ Documented complete execution plan with exact commands for each phase
+- ✅ 5 deploy scripts ready in `/workspace/scripts/`
+- ✅ Comprehensive BRIEF.md + session journal committed
 
-Once authorized, `~/.vercel/auth.json` is populated. Run `scripts/setup-vercel-deploy.sh` in this workspace to configure everything.
+### What remains (needs VERCEL_TOKEN — human action required)
+- ❌ Get VERCEL_TOKEN via device auth URL
+- ❌ Query Vercel API for VERCEL_ORG_ID and VERCEL_PROJECT_ID
+- ❌ Set 4 GitHub secrets on both repos
+- ❌ Disable Vercel SSO on coda-projects team
+- ❌ Deploy aeria-editor from monorepo
+- ❌ Set up Coolify dual deploy on AURORA
+- ❌ Set VITE_OPENARCADE_API_URL env var in production
+
+**🔗 VISIT: https://vercel.com/oauth/device?user_code=VQDB-CBFW** (generated ~16:34 UTC)
+**🔄 ALSO: https://vercel.com/oauth/device?user_code=HQBT-CBWN** (from `vercel whoami` CLI)
+
+When authorized, run `scripts/setup-vercel-deploy.sh` with GITHUB_TOKEN in env.
 
 ---
 
