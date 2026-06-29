@@ -1,7 +1,14 @@
 # BRIEF.md — OpenArcade Storefront / DUAL DEPLOY Investigation
 
 ## Status
-INVESTIGATING — Plan written, awaiting VERCEL_TOKEN
+**BLOCKER #1 ACTIVE** — awaiting VERCEL_TOKEN
+
+## Blockers (Active)
+
+**BLOCKER #1:** No VERCEL_TOKEN available. Vercel API inaccessible. Device OAuth code active:
+1. Visit https://vercel.com/oauth/device?user_code=CNMJ-QVMG in a browser logged into Vercel
+2. OR generate a Vercel token at https://vercel.com/account/tokens and set `VERCEL_TOKEN=xxx` in env
+3. Once authorized: proceed with Phase 2 (configure GH secrets) and Phase 3 (verify CI/CD)
 
 ## Job Info
 - **Job ID:** JOB-4693d58c
@@ -99,20 +106,6 @@ The stated goal references "Vercel project 'elluminate'" but the repo in this wo
 ### Phase 5: Verify Dual Deployment
 - Confirm both Vercel and Coolify deployments are functional
 - Verify identical env vars in both environments
-
----
-
-## 3. BLOCKERS
-
-**BLOCKER #1:** No VERCEL_TOKEN available. Cannot:
-- Query Vercel API for project "elluminate" deployment status
-- Configure GitHub Actions secrets for automated deployment
-- Link the repo to the Vercel project
-- Verify what "latest prod deployment is unknown" actually means in the Vercel dashboard
-
-**Resolution path:** Someone needs to:
-1. Visit https://vercel.com/oauth/device?user_code=KDVM-SWTB in a browser (logged into Vercel as the owner)
-2. OR generate a Vercel token at https://vercel.com/account/tokens and export VERCEL_TOKEN=xxx
 
 ---
 
