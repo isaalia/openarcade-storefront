@@ -8,11 +8,9 @@ on:
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-  _VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
 
 jobs:
-  build:
-    name: "Build"
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -29,70 +27,42 @@ jobs:
       - name: Build
         run: npm run build
 
-  deploy:
-    name: "Deploy to Vercel"
-    needs: build
-    runs-on: ubuntu-latest
-    # Only run deploy if VERCEL_TOKEN is set (checked via env var)
-    if: env._VERCEL_TOKEN != ''
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
+      - name: Check VERCEL_TOKEN
+        id: check-token
+        run: |
+          if [ -z "${{ secrets.VERCEL_TOKEN }}" ]; then
+            echo "⚠️ VERCEL_TOKEN not configured."
+            echo "    To enable Vercel CI/CD, choose ONE of:"
+            echo ""
+            echo "    Option A: Set VERCEL_TOKEN secret"
+            echo "      1. Create a token at https://vercel.com/account/tokens"
+            echo "      2. Set as GitHub secret: VERCEL_TOKEN"
+            echo "      3. Re-run this workflow"
+            echo ""
+            echo "    Option B: Use Vercel Deploy Hooks (no token)"
+            echo "      Use .github/workflows/deploy-hook.yml instead"
+            echo ""
+            echo "    Option C: Install Vercel GitHub App"
+            echo "      https://github.com/apps/vercel → install on isaalia/openarcade-storefront"
+            echo "      Auto-deploys on push — no token needed"
+            exit 0
+          fi
+          echo "has_token=true" >> $GITHUB_OUTPUT
 
       - name: Install Vercel CLI
+        if: steps.check-token.outputs.has_token == 'true'
         run: npm install -g vercel
 
       - name: Deploy to Vercel (production)
-        if: github.ref == 'refs/heads/main'
-        run: vercel deploy --prod --token "${{ secrets.VERCEL_TOKEN }}" --yes
+        if: steps.check-token.outputs.has_token == 'true' && github.ref == 'refs/heads/main'
+        run: vercel deploy --prod --token="${{ secrets.VERCEL_TOKEN }}" --yes
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
       - name: Deploy to Vercel (preview)
-        if: github.ref != 'refs/heads/main'
-        run: vercel deploy --token "${{ secrets.VERCEL_TOKEN }}" --yes
+        if: steps.check-token.outputs.has_token == 'true' && github.ref != 'refs/heads/main'
+        run: vercel deploy --token="${{ secrets.VERCEL_TOKEN }}" --yes
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-
-  deploy-skip-notice:
-    name: "⏭️ Vercel deploy skipped (no VERCEL_TOKEN)"
-    needs: build
-    if: env._VERCEL_TOKEN == ''
-    runs-on: ubuntu-latest
-    steps:
-      - name: Print skip notice
-        run: |
-          echo "============================================"
-          echo "⚠️  VERCEL_DEPLOY_SKIPPED"
-          echo "============================================"
-          echo ""
-          echo "The deploy was skipped because VERCEL_TOKEN is not configured as a GitHub secret."
-          echo ""
-          echo "To enable Vercel CI/CD, choose ONE of:"
-          echo ""
-          echo "  Option A: Set VERCEL_TOKEN secret"
-          echo "    1. Create a token at https://vercel.com/account/tokens"
-          echo "    2. Set as GitHub secret: VERCEL_TOKEN"
-          echo "    3. Re-run this workflow"
-          echo ""
-          echo "  Option B: Use Vercel Deploy Hooks (no token needed)"
-          echo "    1. Open Vercel dashboard → Settings → Git → Deploy Hooks"
-          echo "    2. Create a Deploy Hook"
-          echo "    3. Add the URL as GitHub secret: DEPLOY_HOOK_URL"
-          echo "    4. Use .github/workflows/deploy-hook.yml instead"
-          echo ""
-          echo "  Option C: Install Vercel GitHub App"
-          echo "    1. Visit https://github.com/apps/vercel"
-          echo "    2. Install on isaalia/openarcade-storefront"
-          echo "    3. Auto-deploys on every push — no token needed"
-          echo "============================================"
