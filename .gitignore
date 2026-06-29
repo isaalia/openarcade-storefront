@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Developer portal (separate repo: isaalia/openarcade-developer-portal)
+portal/
+
