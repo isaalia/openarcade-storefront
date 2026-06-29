@@ -1,8 +1,8 @@
 # BRIEF.md — OpenArcade Storefront DUAL DEPLOY Fix (Job JOB-57c547e9)
 
 ## Status
-**BLOCKED — AWAITING USER AUTH** — Vercel OAuth device code: GMCQ-FHHP
-🔗 **https://vercel.com/oauth/device?user_code=GMCQ-FHHP**
+**BLOCKED — AWAITING USER AUTH** — Vercel OAuth device code: CQDL-FKQB
+🔗 **https://vercel.com/oauth/device?user_code=CQDL-FKQB**
 Polling active (every 5s). Code expires ~600s from generation.
 
 ---
@@ -96,7 +96,7 @@ Push Docker image / configure webhook.
 **BLOCKER #1 — ACTION REQUIRED:** Need VERCEL_TOKEN for GitHub Actions CI/CD.
 Fresh device auth running now via `scripts/poll-vercel-auth.sh`. Visit:
 
-🔗 **https://vercel.com/oauth/device?user_code=GMCQ-FHHP**
+🔗 **https://vercel.com/oauth/device?user_code=CQDL-FKQB**
 
 **Alternative approaches (if device auth is inconvenient):**
 1. **Vercel Dashboard PAT:** Go to https://vercel.com/account/tokens → Create token → paste here
@@ -126,4 +126,4 @@ Once provided:
 - **JOB-4693d58c** — Investigation: found 0 GitHub secrets, dead device auth, documented root cause
 - **JOB-926262d6** — Continued: confirmed findings, new device auth (GNDN-SCRD), inconclusive
 - **JOB-e4ea8b4f** — Automation scripts added. Device codes: BPJF-CBGP, TKBK-FSFX. All expired.
-- **JOB-57c547e9 (this job)** — Current. Fresh code: GMCQ-FHHP. Scripts ready.
+- **JOB-57c547e9 (this job)** — Current. Codes: GMCQ-FHHP (expired), CQDL-FKQB (active).
