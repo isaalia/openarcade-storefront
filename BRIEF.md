@@ -1,152 +1,127 @@
-# BRIEF.md — OpenArcade Storefront / DUAL DEPLOY Investigation
+# BRIEF.md — OpenArcade Storefront / DUAL DEPLOY Fix (Job JOB-926262d6)
 
 ## Status
-**INCOMPLETE_GOAL: Cannot resolve Vercel 'elluminate' deployment status without VERCEL_TOKEN.**
+**INVESTIGATING** — Root cause identified. Awaiting VERCEL_TOKEN via device auth.
 
-Human must either:
-1. Visit https://vercel.com/oauth/device?user_code=KDVM-SWTB (logged into Vercel as owner) to authorize
-2. OR generate a Vercel token at https://vercel.com/account/tokens and set `export VERCEL_TOKEN=<token>` in this session
-
-**What passed locally (no token needed):**
-- ✅ Build exits 0
-- ✅ Lint zero errors  
-- ✅ No TODO/FIXME/HACK in src/
-- ✅ No hardcoded secrets or env var leaks in source
-- ✅ openarcade-storefront.vercel.app serves HTTP 200
-- ✅ elluminate.vercel.app serves HTTP 200
+⚠️ **USER ACTION NEEDED:** Visit https://vercel.com/oauth/device?user_code=GNDN-SCRD to authorize Vercel CLI access.
 
 ## Job Info
-- **Job ID:** JOB-4693d58c
+- **Job ID:** JOB-926262d6
 - **Floor:** 0
 - **Agent:** Agent (agent@aigemantowers.com)
 - **Budget:** $5.00 hard cap (~$0 used — all work local)
-- **Goal:** DUAL DEPLOY BROKEN — investigate and fix Vercel project "elluminate" latest prod deployment
+- **Goal:** DUAL DEPLOY BROKEN — investigate and fix Vercel project "storefront" latest prod deployment
 
 ---
 
-## ✅ DONE (Complete)
+## ✅ DONE (Investigation Complete)
 
-1. **Workspace populated** — `isaalia/openarcade-storefront` cloned and pushed to GitHub main branch
-2. **Full investigation completed**:
-   - Built app locally — passes (TypeScript, all 8 pages compile)
-   - ESLint passes — zero errors
-   - No TODOs/HACKS/FIXMEs in source code
-   - No hardcoded secrets in source
-   - Verified both Vercel deployments are LIVE (HTTP 200)
-   - Identified "elluminate" as a separate product (screen capture tool, not related to openarcade-storefront)
-   - Found CORS wildcard (`access-control-allow-origin: *`) on elluminate.vercel.app
-   - Confirmed GitHub Actions secrets are empty (0 secrets, 0 variables)
-   - Confirmed no VERCEL_TOKEN exists in environment
-3. **BRIEF.md written** with full findings, execution plan, and BLOCKER signal
-4. **Pushed to GitHub** — main branch updated with BRIEF.md
+1. **Workspace populated** — `isaalia/openarcade-storefront` cloned from GitHub
+2. **Build verified** — `npm run build` passes cleanly (Next.js 16, TypeScript, all 8 pages)
+   ```
+   ✓ Compiled successfully in 1254ms
+   ✓ TypeScript passed
+   ┌ ○ /
+   ├ ○ /explore
+   ├ ○ /library
+   ├ ○ /profile
+   ├ ○ /search
+   ├ ○ /store
+   └ ○ /wallet
+   ```
+3. **Vercel deployment verified** — `openarcade-storefront.vercel.app` serves all pages HTTP 200
+4. **Root cause identified:** All GitHub Actions secrets are EMPTY:
+   - `VERCEL_TOKEN` — empty → CI/CD fails immediately
+   - `VERCEL_ORG_ID` — empty
+   - `VERCEL_PROJECT_ID` — empty
+   - `COOLIFY_DEPLOY_URL` — empty
+5. **Workflow logs confirmed:** All 4 Deploy to Vercel runs fail with:
+   ```
+   Error: You defined "--token", but it's missing a value
+   ```
+6. **GitHub deployments API** — empty (no recorded deployments)
+7. **No VERCEL_TOKEN in environment** — session has no Vercel credentials
 
 ---
 
-## ⏳ UNFINISHED — Detailed Plan
+## ⏳ REMAINING — Execution Plan
 
-### Item A: Check elluminate Vercel Project Deployment Status
+### Phase 1: Get VERCEL_TOKEN (BLOCKING — needs human auth)
 
-**Why blocked:** Cannot query Vercel API without VERCEL_TOKEN.
+Device auth code: `GNDN-SCRD`
+Polling URL: `https://vercel.com/oauth/device?user_code=GNDN-SCRD`
 
-**Plan (once token obtained):**
+**Action:** Visit the URL above and authorize. The device auth poller is running in background.
+
+When token arrives, it will be saved to `/tmp/vercel_token.txt`.
+
+### Phase 2: Get VERCEL_ORG_ID and VERCEL_PROJECT_ID
+
 ```bash
-# 1. Get project info
+# Get project info to find org and project IDs
 curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
-  "https://api.vercel.com/v9/projects/elluminate"
+  "https://api.vercel.com/v9/projects/openarcade-storefront" \
+  | grep -o '"id":"[^"]*"\|"orgId":"[^"]*"\|"accountId":"[^"]*"'
 
-# 2. List deployments (last 5)
+# Also check what projects exist
 curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
-  "https://api.vercel.com/v6/deployments?projectId=elluminate&limit=5"
-
-# 3. Check latest production deployment status
-curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
-  "https://api.vercel.com/v13/deployments?app=elluminate&target=production&limit=1"
-
-# 4. If "unknown", redeploy
-npx vercel deploy --prod --token=$VERCEL_TOKEN
+  "https://api.vercel.com/v9/projects?limit=20" | grep '"name"\|"id"'
 ```
 
-**Expected outcome:** Determine if deployment is in "error", "building", "ready", or truly "unknown" state. If unknown, redeploy.
+### Phase 3: Set GitHub Actions Secrets
 
----
-
-### Item B: Configure GitHub Actions Secrets
-
-**Why blocked:** Requires VERCEL_TOKEN (and VERCEL_ORG_ID, VERCEL_PROJECT_ID from Item A).
-
-**Plan (once token + IDs obtained):**
 ```bash
-# Set secrets via GitHub API
-curl -X PUT -H "Authorization: Bearer $GITHUB_TOKEN" \
-  -H "Accept: application/vnd.github+json" \
-  "https://api.github.com/repos/isaalia/openarcade-storefront/actions/secrets/VERCEL_TOKEN" \
-  -d "{\"encrypted_value\":\"$(echo -n '$VERCEL_TOKEN' | base64)\",\"key_id\":\"$PUBLIC_KEY_ID\"}"
+# Get public key
+PUB_KEY_DATA=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
+  "https://api.github.com/repos/isaalia/openarcade-storefront/actions/secrets/public-key")
+PUB_KEY_ID=$(echo "$PUB_KEY_DATA" | grep -o '"key_id":"[^"]*"' | cut -d'"' -f4)
+PUB_KEY=$(echo "$PUB_KEY_DATA" | grep -o '"key":"[^"]*"' | cut -d'"' -f4)
 
-# Repeat for VERCEL_ORG_ID, VERCEL_PROJECT_ID
-# Get public key first
-curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
-  "https://api.github.com/repos/isaalia/openarcade-storefront/actions/secrets/public-key"
+# Set VERCEL_TOKEN secret
+# (libsodium sealed box encryption required — prepare a script)
 ```
 
-**Expected outcome:** GitHub Actions can trigger `deploy-vercel.yml` on push to main.
+### Phase 4: Deploy to Vercel
 
----
-
-### Item C: Verify CI/CD Pipeline
-
-**Plan:**
 ```bash
-# Trigger the workflow via API
-curl -X POST -H "Authorization: Bearer $GITHUB_TOKEN" \
-  "https://api.github.com/repos/isaalia/openarcade-storefront/actions/workflows/deploy-vercel.yml/dispatches" \
-  -d '{"ref":"main"}'
+# Deploy production
+vercel deploy --prod --token=$VERCEL_TOKEN --yes
 
-# Check workflow runs
-curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
-  "https://api.github.com/repos/isaalia/openarcade-storefront/actions/runs?status=success&branch=main&per_page=5"
-```
-
-**Expected outcome:** Deployment triggers from GitHub, Vercel receives the build, site updates.
-
----
-
-### Item D: Fix elluminate CORS Wildcard
-
-**Why blocked:** Don't have elluminate source code.
-
-**Plan:**
-```bash
-# Check if CORS is set via Vercel headers config at project level
+# Verify deployment
 curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
-  "https://api.vercel.com/v9/projects/elluminate" | jq '.'
-
-# If source exists, add Vercel headers config:
-# vercel.json or _headers file
+  "https://api.vercel.com/v6/deployments?app=openarcade-storefront&target=production&limit=1"
 ```
 
-**Alternative:** If elluminate source is in a different repo/location, find and fix there.
+### Phase 5: Set Up Coolify/Hetzner (Dual Deploy)
 
----
-
-### Item E: Set Up Coolify/Hetzner Secondary Deployment
-
-**Plan:**
 ```bash
 # Build Docker image
 docker build -t openarcade-storefront .
 
-# Push to registry (if applicable)
-docker tag openarcade-storefront <registry>/openarcade-storefront
-docker push <registry>/openarcade-storefront
-
-# In Coolify:
-# 1. Create new project from GitHub repo
-# 2. Configure Docker build
-# 3. Set environment variables
-# 4. Deploy
-
+# Configure Coolify deployment webhook URL
 # Set COOLIFY_DEPLOY_URL as GitHub secret
 ```
+
+---
+
+## Root Cause Analysis
+
+**What's broken:** "DUAL DEPLOY BROKEN: Vercel project 'storefront' latest prod deployment is unknown"
+
+| Component | Status | Root Cause |
+|-----------|--------|------------|
+| Vercel app | ✅ LIVE | Serving HTTP 200 at openarcade-storefront.vercel.app |
+| Vercel CI/CD | ❌ FAILING | All 4 workflow runs fail — `--token=` is empty |
+| GitHub Secrets | ❌ EMPTY | 0 secrets, 0 variables configured |
+| Coolify Deploy | ❌ NOT SETUP | No COOLIFY_DEPLOY_URL |
+| Coolify CI/CD | ❌ FAILING | workflow runs fail due to missing secret |
+
+**Why "unknown":** The Vercel project exists and serves traffic, but:
+1. No CI/CD pipeline connects GitHub pushes → Vercel deploys
+2. No VERCEL_TOKEN exists to query the API for status
+3. The project was likely deployed manually via Vercel dashboard, not linked to GitHub
+
+**Fix requires:** VERCEL_TOKEN from device auth → then set secrets → deploy → set up Coolify
 
 ---
 
@@ -158,21 +133,15 @@ docker push <registry>/openarcade-storefront
 | Tests | ⏳ N/A | No test files in repo yet |
 | Lint zero errors | ✅ PASS | ESLint passes clean |
 | Security scan clean | ⏳ Not run | Need tools (gitleaks, grype) |
-| Secret scan clean | ❌ FAIL | CORS wildcard on elluminate.vercel.app |
-| App boots | ✅ PASS | Both apps live on Vercel |
+| Secret scan clean | ⏳ Pending | Will check after deploy fixed |
+| App boots | ✅ PASS | openarcade-storefront.vercel.app live |
 | Auth works | ⏳ N/A | No auth system in codebase |
 | No TODO in src/ | ✅ PASS | Grep returned nothing |
 
 ---
 
-## 5. HANDOFF NOTES
+## Blockers
 
-- **HANDOFF:** Investigation complete. All local checks passed.
-- **INCOMPLETE_GOAL:** Cannot complete the dual-deploy fix without VERCEL_TOKEN.
-- The next agent/OLYMPUS should:
-  1. Obtain VERCEL_TOKEN (see Phase 1 / Blockers above)
-  2. Run Items A–E from the detailed plan above
-  3. Run Gate7 checks
-  4. Signal GATE7_COMPLETE when all pass
-- **Known issue:** `access-control-allow-origin: *` on elluminate.vercel.app (LAW item 6 violation)
-- **Budget note:** ~$0 used (all work was local investigation and build)
+**BLOCKER #1 (awaiting human action):** Need `VERCEL_TOKEN`. 
+Device auth link: https://vercel.com/oauth/device?user_code=GNDN-SCRD
+Once authorized, token will arrive via polling and fix can proceed.
