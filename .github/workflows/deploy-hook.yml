@@ -1,0 +1,67 @@
+name: Deploy via Vercel Hook
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: "Build"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+  deploy:
+    name: "Deploy via Hook"
+    needs: build
+    runs-on: ubuntu-latest
+    if: ${{ secrets.DEPLOY_HOOK_URL != '' && secrets.DEPLOY_HOOK_URL != null }}
+    steps:
+      - name: Trigger Vercel deploy via hook
+        run: |
+          echo "Triggering Vercel deploy hook..."
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -X POST "${{ secrets.DEPLOY_HOOK_URL }}")
+          if [ "$RESPONSE" = "200" ] || [ "$RESPONSE" = "201" ]; then
+            echo "✅ Deploy triggered successfully (HTTP $RESPONSE)"
+          else
+            echo "⚠️ Deploy hook returned HTTP $RESPONSE"
+            echo "Check the Vercel dashboard for deployment status."
+          fi
+
+  deploy-skip-notice:
+    name: "⏭️ Hook deploy skipped (no DEPLOY_HOOK_URL)"
+    needs: build
+    if: ${{ secrets.DEPLOY_HOOK_URL == '' || secrets.DEPLOY_HOOK_URL == null }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print skip notice
+        run: |
+          echo "============================================"
+          echo "⚠️  HOOK_DEPLOY_SKIPPED"
+          echo "============================================"
+          echo ""
+          echo "The deploy hook deploy was skipped because DEPLOY_HOOK_URL is not configured."
+          echo ""
+          echo "To use Vercel Deploy Hooks:"
+          echo "  1. Open the Vercel dashboard project settings"
+          echo "  2. Go to Git → Deploy Hooks"
+          echo "  3. Create a new hook (name: 'GitHub Actions')"
+          echo "  4. Copy the generated URL"
+          echo "  5. Set as GitHub secret: DEPLOY_HOOK_URL"
+          echo ""
+          echo "Deploy hooks DO NOT require a VERCEL_TOKEN."
+          echo "The URL itself is the credential."
+          echo "============================================"

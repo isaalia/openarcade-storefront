@@ -2,8 +2,17 @@
 /**
  * setup-secrets.js — One-command GitHub Actions secrets setup
  *
- * Prerequisites (set these env vars):
- *   GITHUB_TOKEN, VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID
+ * Sets up secrets for openarcade-storefront dual deploy.
+ * Can use EITHER VERCEL_TOKEN (classic) OR DEPLOY_HOOK_URL (hook-based, no token).
+ *
+ * Prerequisites:
+ *   GITHUB_TOKEN (always required)
+ *
+ * Option A — Vercel token-based auth (set all three):
+ *   VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID
+ *
+ * Option B — Vercel deploy hook (no token needed):
+ *   DEPLOY_HOOK_URL
  *
  * Optional:
  *   COOLIFY_DEPLOY_URL  — Coolify deploy webhook URL
@@ -19,7 +28,7 @@ const REPO = "isaalia/openarcade-storefront";
 // Also set for developer-portal if it exists:
 const SECONDARY_REPO = "isaalia/openarcade-developer-portal";
 
-const REQUIRED_VARS = ["GITHUB_TOKEN", "VERCEL_TOKEN", "VERCEL_ORG_ID", "VERCEL_PROJECT_ID"];
+const REQUIRED_VARS = ["GITHUB_TOKEN"];
 
 async function main() {
   console.log("=== OpenArcade — GitHub Secrets Setup ===\n");
@@ -32,11 +41,29 @@ async function main() {
     }
   }
 
-  const secrets = {
-    VERCEL_TOKEN: process.env.VERCEL_TOKEN,
-    VERCEL_ORG_ID: process.env.VERCEL_ORG_ID,
-    VERCEL_PROJECT_ID: process.env.VERCEL_PROJECT_ID,
-  };
+  const secrets = {};
+
+  // Option A: Vercel token-based auth
+  if (process.env.VERCEL_TOKEN && process.env.VERCEL_ORG_ID && process.env.VERCEL_PROJECT_ID) {
+    secrets.VERCEL_TOKEN = process.env.VERCEL_TOKEN;
+    secrets.VERCEL_ORG_ID = process.env.VERCEL_ORG_ID;
+    secrets.VERCEL_PROJECT_ID = process.env.VERCEL_PROJECT_ID;
+    console.log("📋 Mode: Vercel token-based deploy");
+  } else {
+    console.log("ℹ️  VERCEL_TOKEN/ORG/PROJECT not set — skipping Vercel token secrets");
+  }
+
+  // Option B: Vercel deploy hook (no token needed)
+  if (process.env.DEPLOY_HOOK_URL) {
+    secrets.DEPLOY_HOOK_URL = process.env.DEPLOY_HOOK_URL;
+    console.log("📋 Mode: Vercel deploy hook (no token)");
+  }
+
+  if (Object.keys(secrets).length === 0 && !process.env.COOLIFY_DEPLOY_URL) {
+    console.error("❌ No secrets to set. Set VERCEL_TOKEN+VERCEL_ORG_ID+VERCEL_PROJECT_ID, DEPLOY_HOOK_URL, or COOLIFY_DEPLOY_URL");
+    process.exit(1);
+  }
+
   if (process.env.COOLIFY_DEPLOY_URL) {
     secrets.COOLIFY_DEPLOY_URL = process.env.COOLIFY_DEPLOY_URL;
   }
@@ -90,9 +117,18 @@ async function main() {
 
   console.log("✅ Done!");
   console.log("\nNext steps:");
-  console.log("  1. Push to main → triggers deploy-vercel workflow");
+  console.log("  1. Push to main → triggers deploy-vercel.yml (or deploy-hook.yml) workflow");
   console.log("  2. Verify at https://openarcade-storefront.vercel.app");
   console.log("  3. Check GitHub Actions: https://github.com/isaalia/openarcade-storefront/actions");
+  console.log("");
+  console.log("Secrets set: " + Object.keys(secrets).join(", "));
+  if (secrets.DEPLOY_HOOK_URL) {
+    console.log("\n📌 Deploy hook mode active — deploys trigger via webhook, no VERCEL_TOKEN needed.");
+    console.log("   The workflow at .github/workflows/deploy-hook.yml will run on push.");
+  }
+  if (secrets.VERCEL_TOKEN) {
+    console.log("\n📌 Token mode active — deploy-vercel.yml will deploy via Vercel CLI.");
+  }
 }
 
 /** Make a JSON-parsed GitHub API request */

@@ -7,14 +7,30 @@ on:
 
 jobs:
   deploy:
+    name: "Deploy to Coolify"
     runs-on: ubuntu-latest
+    if: ${{ secrets.COOLIFY_DEPLOY_URL != '' && secrets.COOLIFY_DEPLOY_URL != null }}
     steps:
       - name: Trigger Coolify deployment
         run: |
-          if [ -z "${{ secrets.COOLIFY_DEPLOY_URL }}" ]; then
-            echo "⚠️ COOLIFY_DEPLOY_URL not configured — skipping Coolify deploy."
-            echo "   Set it as a GitHub secret to enable Coolify/Hetzner dual deployment."
-            exit 0
-          fi
           curl -s -X GET "${{ secrets.COOLIFY_DEPLOY_URL }}" \
             -H "Accept: application/json"
+
+  deploy-skip-notice:
+    name: "⏭️ Coolify deploy skipped (no COOLIFY_DEPLOY_URL)"
+    if: ${{ secrets.COOLIFY_DEPLOY_URL == '' || secrets.COOLIFY_DEPLOY_URL == null }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print skip notice
+        run: |
+          echo "============================================"
+          echo "⚠️  COOLIFY_DEPLOY_SKIPPED"
+          echo "============================================"
+          echo ""
+          echo "The Coolify deploy was skipped because COOLIFY_DEPLOY_URL is not configured."
+          echo ""
+          echo "To enable Coolify CI/CD:"
+          echo "  1. Obtain the Coolify deploy webhook URL from the Coolify dashboard"
+          echo "  2. Set as GitHub secret: COOLIFY_DEPLOY_URL"
+          echo "  3. Re-run this workflow"
+          echo "============================================"
