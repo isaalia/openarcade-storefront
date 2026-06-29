@@ -5,6 +5,9 @@ on:
     branches: [main]
   workflow_dispatch:
 
+env:
+  _DEPLOY_HOOK_URL: ${{ secrets.DEPLOY_HOOK_URL }}
+
 jobs:
   build:
     name: "Build"
@@ -28,7 +31,7 @@ jobs:
     name: "Deploy via Hook"
     needs: build
     runs-on: ubuntu-latest
-    if: ${{ secrets.DEPLOY_HOOK_URL != '' && secrets.DEPLOY_HOOK_URL != null }}
+    if: env._DEPLOY_HOOK_URL != ''
     steps:
       - name: Trigger Vercel deploy via hook
         run: |
@@ -44,7 +47,7 @@ jobs:
   deploy-skip-notice:
     name: "⏭️ Hook deploy skipped (no DEPLOY_HOOK_URL)"
     needs: build
-    if: ${{ secrets.DEPLOY_HOOK_URL == '' || secrets.DEPLOY_HOOK_URL == null }}
+    if: env._DEPLOY_HOOK_URL == ''
     runs-on: ubuntu-latest
     steps:
       - name: Print skip notice

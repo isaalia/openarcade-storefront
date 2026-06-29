@@ -5,11 +5,14 @@ on:
     branches: [main]
   workflow_dispatch:
 
+env:
+  _COOLIFY_DEPLOY_URL: ${{ secrets.COOLIFY_DEPLOY_URL }}
+
 jobs:
   deploy:
     name: "Deploy to Coolify"
     runs-on: ubuntu-latest
-    if: ${{ secrets.COOLIFY_DEPLOY_URL != '' && secrets.COOLIFY_DEPLOY_URL != null }}
+    if: env._COOLIFY_DEPLOY_URL != ''
     steps:
       - name: Trigger Coolify deployment
         run: |
@@ -18,7 +21,7 @@ jobs:
 
   deploy-skip-notice:
     name: "⏭️ Coolify deploy skipped (no COOLIFY_DEPLOY_URL)"
-    if: ${{ secrets.COOLIFY_DEPLOY_URL == '' || secrets.COOLIFY_DEPLOY_URL == null }}
+    if: env._COOLIFY_DEPLOY_URL == ''
     runs-on: ubuntu-latest
     steps:
       - name: Print skip notice
