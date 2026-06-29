@@ -15,9 +15,6 @@
  * It uses libsodium-wrappers for GitHub's required encryption.
  */
 const https = require("https");
-const { execSync } = require("child_process");
-
-const GITHUB_API = "https://api.github.com";
 const REPO = "isaalia/openarcade-storefront";
 // Also set for developer-portal if it exists:
 const SECONDARY_REPO = "isaalia/openarcade-developer-portal";
