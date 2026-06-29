@@ -1,7 +1,9 @@
 # BRIEF.md — OpenArcade Storefront / DUAL DEPLOY Fix (Job JOB-e4ea8b4f)
 
 ## Status
-**INVESTIGATING** — Root cause confirmed. Blocked on VERCEL_TOKEN.
+**BLOCKED — AWAITING USER AUTH** — Root cause confirmed. All 4 GitHub secrets empty.
+🔗 PLEASE VISIT: https://vercel.com/oauth/device?user_code=TKBK-FSFX
+Watcher polling for auth. Automation script ready.
 
 ---
 
