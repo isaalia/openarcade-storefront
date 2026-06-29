@@ -59,7 +59,7 @@ async function main() {
     // Get public key
     const keyData = await ghRequest("GET", `/repos/${repo}/actions/secrets/public-key`);
     const keyId = keyData.key_id;
-    const key = key.key;
+    const key = keyData.key;
 
     console.log(`  Public key ID: ${keyId}`);
 
