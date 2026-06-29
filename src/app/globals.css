@@ -1,0 +1,68 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: "DM Sans", "DM Sans Fallback";
+  --font-display: "Syne", "Syne Fallback";
+  --color-background: #0a0a0b;
+  --color-foreground: #f4f4f5;
+}
+
+@keyframes gradient-shift {
+  0%, to { background-position: 0 50%; }
+}
+
+@keyframes orb-pulse {
+  0%, to { opacity: 0.4; transform: scale(1); }
+}
+
+@keyframes shimmer {
+  to { transform: translateX(100%); }
+}
+
+/* Grid pattern background */
+.grid-pattern {
+  background-image:
+    linear-gradient(rgba(251, 191, 36, 0.03) 1px, transparent 0),
+    linear-gradient(90deg, rgba(251, 191, 36, 0.03) 1px, transparent 0);
+  background-size: 48px 48px;
+}
+
+/* Animated gradient text */
+.animate-gradient-text {
+  background-size: 200% auto;
+  animation: gradient-shift 6s ease-in-out infinite;
+}
+
+/* Skip to content link */
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: 1rem;
+  --tw-translate-y: -4rem;
+  border-radius: 0.5rem;
+  background-color: rgb(245 158 11);
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  color: rgb(9 9 11);
+  transition-property: transform;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+  transform: translateY(-4rem);
+  z-index: 100;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+body {
+  background: #0a0a0b;
+  color: #f4f4f5;
+  font-family: "DM Sans", "DM Sans Fallback";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
