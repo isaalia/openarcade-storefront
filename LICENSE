@@ -1,0 +1,78 @@
+Business Source License 1.1
+
+License text copyright (c) 2022 MariaDB plc, All Rights Reserved.
+"Business Source License" is a trademark of MariaDB plc.
+
+-----------------------------------------------------------------------------
+
+Parameters
+
+Licensor:             Akua Agyeman
+Licensed Work:        OpenArcade Storefront
+                      The Licensed Work is (c) 2026 Akua Agyeman
+Additional Use Grant: You may not use the Licensed Work in a competitive
+                      capacity to offer a competing commercial game storefront
+                      service. Non-commercial and personal use is permitted.
+
+Change Date:          2031-06-29
+Change License:       MIT
+
+-----------------------------------------------------------------------------
+
+Terms
+
+The Licensor hereby grants you the right to copy, modify, create derivative
+works, redistribute, and make non-production use of the Licensed Work. The
+Licensor may make an Additional Use Grant, above, permitting limited
+production use.
+
+Any use of the Licensed Work other than as specifically authorized herein
+is prohibited.
+
+The Patented Contributions in this Licensed Work are also subject to the terms
+of this license.
+
+This license is a "source available" license. You may use the Licensed Work
+in source or compiled form, subject to the terms herein.
+
+You may not use the Licensed Work in a production environment unless you
+comply with the Additional Use Grant.
+
+You may not remove this license or any notices from the Licensed Work.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+-----------------------------------------------------------------------------
+
+Change License: MIT
+
+Upon the Change Date, the Licensed Work and all Patented Contributions will
+become available under the terms of the MIT License.
+
+MIT License:
+
+Copyright (c) 2026 Akua Agyeman
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
