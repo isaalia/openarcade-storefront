@@ -32,8 +32,14 @@ jobs:
 
       - name: Deploy to Vercel
         run: |
+          if [ -z "${{ secrets.VERCEL_TOKEN }}" ]; then
+            echo "⚠️ VERCEL_TOKEN not configured — Vercel auto-deploy via GitHub App handles push deploys."
+            echo "   To deploy manually via this workflow, set VERCEL_TOKEN in GitHub secrets."
+            echo "   See: scripts/poll-vercel-auth.sh or https://vercel.com/account/tokens"
+            exit 0
+          fi
           if [ "${{ github.ref }}" = "refs/heads/main" ]; then
-            vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }} --yes
+            vercel deploy --prod --token="${{ secrets.VERCEL_TOKEN }}" --yes
           else
-            vercel deploy --token=${{ secrets.VERCEL_TOKEN }} --yes
+            vercel deploy --token="${{ secrets.VERCEL_TOKEN }}" --yes
           fi

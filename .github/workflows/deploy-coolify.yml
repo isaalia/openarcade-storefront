@@ -10,6 +10,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Trigger Coolify deployment
+        if: ${{ secrets.COOLIFY_DEPLOY_URL != '' }}
         run: |
           curl -s -X GET "${{ secrets.COOLIFY_DEPLOY_URL }}" \
             -H "Accept: application/json"
+
+      - name: Skip Coolify (no URL configured)
+        if: ${{ secrets.COOLIFY_DEPLOY_URL == '' }}
+        run: |
+          echo "⚠️ COOLIFY_DEPLOY_URL not configured — skipping Coolify deploy."
+          echo "   Set it as a GitHub secret to enable Coolify/Hetzner dual deployment."
