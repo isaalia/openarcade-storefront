@@ -91,7 +91,7 @@ Push Docker image / configure webhook.
 **BLOCKER #1 — ACTION REQUIRED:** Need VERCEL_TOKEN for GitHub Actions CI/CD.
 Fresh device auth running now. Visit the URL below to authorize:
 
-🔗 **https://vercel.com/oauth/device?user_code=TKBK-FSFX**
+🔗 **https://vercel.com/oauth/device?user_code=BPJF-CBGP**
 
 Once authorized, the CLI will save the token and I can proceed with:
 1. Query Vercel API for ORG_ID and PROJECT_ID

@@ -13,7 +13,7 @@ if ! ps aux | grep -q "[v]ercel login"; then
 fi
 
 # Poll for auth.json
-for i in $(seq 1 120); do
+for i in $(seq 1 600); do
     if [ -f "$HOME/.vercel/auth.json" ]; then
         VTOKEN=$(cat "$HOME/.vercel/auth.json" | node -e "process.stdin.resume();let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{try{console.log(JSON.parse(d).token)}catch(e){console.error('no token')}})" 2>/dev/null)
         if [ -n "$VTOKEN" ] && [ "$VTOKEN" != "no token" ]; then

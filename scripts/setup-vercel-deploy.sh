@@ -1,7 +1,7 @@
 #!/bin/bash
 # scripts/setup-vercel-deploy.sh
 # Automated Vercel deployment setup for GitHub Actions CI/CD
-# Run after: user visits https://vercel.com/oauth/device?user_code=TKBK-FSFX
+# Run after: user visits https://vercel.com/oauth/device?user_code=BPJF-CBGP
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
