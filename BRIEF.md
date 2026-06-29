@@ -98,13 +98,26 @@ Fresh device auth running now via `scripts/poll-vercel-auth.sh`. Visit:
 
 🔗 **https://vercel.com/oauth/device?user_code=GMCQ-FHHP**
 
-Once authorized:
-1. Token saved → query Vercel API for ORG_ID and PROJECT_ID
+**Alternative approaches (if device auth is inconvenient):**
+1. **Vercel Dashboard PAT:** Go to https://vercel.com/account/tokens → Create token → paste here
+2. **Vercel Deploy Hook:** Settings → Git → Deploy Hooks → create → share URL
+3. **Local CLI:** Run `vercel.json` on your machine → copy token from `~/.vercel/auth.json`
+4. **Vercel GitHub App:** Install it on the repo → no token needed (native integration)
+
+**What I need from you (any one of these works):**
+| Item | How to get it |
+|------|---------------|
+| VERCEL_TOKEN | Paste a Vercel PAT or authorize device flow |
+| VERCEL_ORG_ID | Visible in Vercel dashboard URL: `/team/ORG_ID` or Settings → General |
+| VERCEL_PROJECT_ID | In Vercel project Settings → General → Project ID |
+
+Once provided:
+1. Save token → query Vercel API for ORG_ID and PROJECT_ID (if not provided)
 2. Set GitHub Actions secrets via encrypted API (libsodium)
 3. Trigger production deployment
-4. Verify dual deploy targets
+4. Verify both deploy targets
 
-⏳ **Poller running in background** — polling every 5s.
+⏳ **Poller running in background** — polling every 5s for device auth.
 
 ---
 
