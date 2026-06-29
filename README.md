@@ -1,36 +1,76 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# OpenArcade Storefront
+
+**Indie games, your way.** A digital storefront for independent game developers.
+
+Built with [Next.js 16](https://nextjs.org), [Tailwind CSS v4](https://tailwindcss.com), and [TypeScript](https://www.typescriptlang.org/).
+
+## Features
+
+- Browse and discover indie games
+- Game library and wallet management
+- Dark theme with amber/teal accent colors
+- Responsive design (mobile-first)
+- Server-side rendered for performance
+
+## Pages
+
+- `/` — Home with hero section and game discovery
+- `/explore` — Browse and discover games
+- `/store` — Game storefront
+- `/library` — User game library
+- `/wallet` — Balance and transactions
+- `/profile` — Account settings
+- `/search` — Search games
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Framework | Next.js 16 (App Router) |
+| Styling | Tailwind CSS v4 |
+| Fonts | Syne (display), DM Sans (body) |
+| Language | TypeScript |
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Build
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+npm start
+```
 
-## Learn More
+## Deployment
 
-To learn more about Next.js, take a look at the following resources:
+### Vercel (primary)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Push to GitHub repo
+2. Import project in Vercel dashboard
+3. Deploy — zero config required
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Coolify / Hetzner (secondary — dual deployment)
 
-## Deploy on Vercel
+1. Push to GitHub repo
+2. In Coolify, create a new project from the GitHub repo
+3. Docker build: `docker build -t openarcade-storefront .`
+4. Run: `docker run -p 3000:3000 openarcade-storefront`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### GitHub Actions
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Two workflows are provided:
+
+- `.github/workflows/deploy-vercel.yml` — Deploys to Vercel on push to `main`
+  - Requires secrets: `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`
+- `.github/workflows/deploy-coolify.yml` — Triggers Coolify deployment on push to `main`
+  - Requires secret: `COOLIFY_DEPLOY_URL`
+
+## License
+
+BSL — See [LICENSE](./LICENSE) file.
