@@ -31,21 +31,20 @@ jobs:
         id: check-token
         run: |
           if [ -z "${{ secrets.VERCEL_TOKEN }}" ]; then
-            echo "⚠️ VERCEL_TOKEN not configured."
-            echo "    To enable Vercel CI/CD, choose ONE of:"
+            echo "❌ VERCEL_TOKEN secret is not set — deploy skipped."
             echo ""
-            echo "    Option A: Set VERCEL_TOKEN secret"
-            echo "      1. Create a token at https://vercel.com/account/tokens"
-            echo "      2. Set as GitHub secret: VERCEL_TOKEN"
-            echo "      3. Re-run this workflow"
+            echo "To fix, choose ONE of:"
+            echo "  Option A: Set VERCEL_TOKEN secret"
+            echo "    1. Create a token: https://vercel.com/account/tokens"
+            echo "    2. Add as GitHub secret VERCEL_TOKEN (+ VERCEL_ORG_ID, VERCEL_PROJECT_ID)"
+            echo "    3. Re-run this workflow"
             echo ""
-            echo "    Option B: Use Vercel Deploy Hooks (no token)"
-            echo "      Use .github/workflows/deploy-hook.yml instead"
+            echo "  Option B: Use deploy hooks (no token)"
+            echo "    See .github/workflows/deploy-hook.yml"
             echo ""
-            echo "    Option C: Install Vercel GitHub App"
-            echo "      https://github.com/apps/vercel → install on isaalia/openarcade-storefront"
-            echo "      Auto-deploys on push — no token needed"
-            exit 0
+            echo "  Option C: Install Vercel GitHub App (auto-deploys, no token needed)"
+            echo "    https://github.com/apps/vercel"
+            exit 1
           fi
           echo "has_token=true" >> $GITHUB_OUTPUT
 

@@ -1,6 +1,34 @@
 # BRIEF.md — openarcade-storefront Dual Deploy Investigation (JOB-c9d4d54e)
 
 ## Status
+
+**JOB-84ba6089 INVESTIGATION COMPLETE (2026-07-01 UTC)**
+
+### Vercel Status: ✅ FULLY OPERATIONAL
+- Site live: `openarcade-storefront.vercel.app` — HTTP 200, all 7 routes verified
+- Deployment ID: `dpl_EqJLhFCAb2rthutUrnSHDZKG81Sf` (confirmed from live site HTML)
+- Auto-deploy: Vercel GitHub App (Install ID: 92733929) — working, deploys on push to main
+- Latest CI run: 2026-07-01T00:12:22Z — all 4 workflows pass
+
+### Root Cause of "unknown deployment" reports: IDENTIFIED
+Both Vercel deploy workflows (`deploy-vercel.yml` and `deploy-hook.yml`) use `exit 0` when their
+secrets are missing — causing every CI run to show **green/success** while deploy steps are silently
+**skipped**. GitHub repo has **zero secrets configured** (total_count: 0). This is why prior agents
+consistently reported "deployment unknown" — the CI pipeline appeared healthy but never deployed.
+
+**Fix applied:** `deploy-vercel.yml` changed from `exit 0` → `exit 1` when VERCEL_TOKEN is missing,
+so the failure is now visible. Vercel GitHub App continues to handle actual deploys automatically.
+
+### Coolify Status: ✅ SERVER OPERATIONAL, deployment not configured
+- Server running at `http://5.9.153.215:8000` (HTTP 302, Coolify login page)
+- No app configured yet in Coolify — requires human action (5-min task)
+- `COOLIFY_DEPLOY_URL` GitHub secret not set
+
+### Remaining Blocker (Human Action Required)
+BLOCKER: Coolify app not configured. Human must: log into http://5.9.153.215:8000 → create app for openarcade-storefront → copy deploy webhook URL → set as GitHub secret `COOLIFY_DEPLOY_URL`. Once done, dual deploy is complete.
+
+---
+
 **JOB-b33439ae BREAKTHROUGH: COOLIFY IS RUNNING AT PORT 8000 — not port 3000 as all prior agents assumed.**
 
 **✅ VERCEL — FULLY OPERATIONAL**
