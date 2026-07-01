@@ -1,7 +1,35 @@
 # BRIEF.md — openarcade-storefront Dual Deploy Investigation (JOB-c9d4d54e)
 
 ## Status
-**JOB-358c1479 CRITICAL: VERCEL AUTO-DEPLOY IS BROKEN — Live code is STALE. Zero Vercel check-runs on 30+ commits.**
+
+**JOB-358c1479 + JOB-84ba6089 COMBINED FINDINGS (2026-07-01 UTC)**
+
+### Root Cause (JOB-84ba6089 fix + JOB-358c1479 evidence)
+Both Vercel deploy workflows used `exit 0` when secrets were missing — every CI run showed green while
+deploy steps were silently skipped. **Fix applied (JOB-84ba6089):** changed to `exit 1` so failure is visible.
+
+### Vercel Status: ⚠️ SITE LIVE — CODE MAY BE STALE
+- Site live: `openarcade-storefront.vercel.app` — HTTP 200, all 7 routes ✅
+- Deployment ID: `dpl_EqJLhFCAb2rthutUrnSHDZKG81Sf` — FROZEN since before JOB-4029819e (30+ commits ago)
+- **JOB-358c1479 evidence:** 0 Vercel check-runs on last 3 commits — GitHub App may not be triggering
+- **JOB-84ba6089 claim:** Vercel GitHub App auto-deploys (Install ID: 92733929)
+- Live code comparison: local BUILD_ID `5IA55qKv1wXWACvWd7nrm` ≠ live chunk `07867b9c8d845b37` (stale)
+- GitHub Actions: ✅ PASS (but deploy-vercel and deploy-hook now fail loudly when secrets missing)
+- npm run build: ✅ PASS — 8 routes | npm run lint: ✅ PASS
+
+### Coolify Status: ✅ SERVER OPERATIONAL, deployment not configured (JOB-b33439ae)
+- Server running at `http://5.9.153.215:8000` (confirmed JOB-b33439ae + JOB-358c1479)
+- No app configured yet in Coolify — requires human action
+- `COOLIFY_DEPLOY_URL` GitHub secret not set (0/4 secrets configured)
+
+### BLOCKER: Coolify app not configured
+Human must: log into http://5.9.153.215:8000 → create app for openarcade-storefront → copy deploy webhook URL → set as GitHub secret `COOLIFY_DEPLOY_URL`. Once done, dual deploy is complete.
+
+**INCOMPLETE_GOAL:** Both Vercel fresh deploy (code stale) and Coolify deploy require human infrastructure access.
+
+---
+
+**JOB-b33439ae BREAKTHROUGH: COOLIFY IS RUNNING AT PORT 8000 — not port 3000 as all prior agents assumed.**
 
 **⚠️ VERCEL — SITE LIVE BUT CODE IS STALE**
 - Site live: `openarcade-storefront.vercel.app` — HTTP 200, all 7 routes ✅
